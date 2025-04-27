@@ -1,1 +1,1 @@
-# Projekt_cpp
+Mariusz Turzyński
