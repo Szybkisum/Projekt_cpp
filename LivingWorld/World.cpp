@@ -105,7 +105,7 @@ void World::makeTurn()
 			reproduced = true;
 		} else if (!freePositions.empty()) {
 			Position pos = freePositions[dist(rng())];
-			org->setPosition(pos);
+			org->move(pos);
 		}
 		if (!reproduced) org->setPower(org->getPower() + 1);
 		org -> setLiveLength(org->getLiveLength() - 1);

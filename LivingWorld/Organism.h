@@ -42,5 +42,5 @@ public:
 	void recordDeath(int turn);
 
 	virtual std::shared_ptr<Organism> clone(const Position& pos, int birthTurn) const = 0;
-	virtual void move(int dx, int dy) = 0;
+	virtual void move(Position position) = 0;
 };

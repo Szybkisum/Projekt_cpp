@@ -103,8 +103,3 @@ void Organism::recordDeath(int deathTurn)
 {
     lifeRecord->setDeathTurn(deathTurn);
 }
-
-void Organism::move(int dx, int dy)
-{
-	position.move(dx, dy);
-}

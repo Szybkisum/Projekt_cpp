@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Position.h"
 #include "Plant.h"
+#include "Animal.h"
 #include "World.h"
 
 using namespace std;
@@ -13,7 +14,7 @@ int main()
 	Position p2{ 3, 5 };
 
 	world.addOrganism<Plant>(0, 5, 5, 2, p1, world.getTurn());
-	world.addOrganism<Plant>(0, 5, 5, 2, p2, world.getTurn());
+	world.addOrganism<Animal>(0, 5, 5, 2, p2, world.getTurn());
 
 	// Tura 0
 	cout << world.toString() << endl;

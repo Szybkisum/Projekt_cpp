@@ -17,7 +17,7 @@ std::shared_ptr<Organism> Plant::clone(const Position& pos, int birthTurn) const
     return std::make_shared<Plant>(0, 5, 5, 2, pos, birthTurn, getAncestorHistory());
 }
 
-void Plant::move(int dx, int dy)
+void Plant::move(Position pos)
 {
-	move(0, 0);
+	return;
 }
