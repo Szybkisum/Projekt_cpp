@@ -1,10 +1,8 @@
 #pragma once
 
-#include <vector>
 #include <ctime>
+#include <algorithm>
 #include "Organism.h"
-
-using namespace std;
 
 class World
 {
@@ -12,32 +10,41 @@ private:
 	int worldX;
 	int worldY;
 	int turn = 0;
-	vector<Organism> organisms;
+	std::vector<std::unique_ptr<Organism>> organisms;
 	char separator = '.';
 
-	string getOrganismFromPosition(int x, int y);
-	bool isPositionOnWorld(int x, int y);
-	bool isPositionFree(Position position);
+	std::string getSpeciesFromPosition(int x, int y) const;
+	bool isPositionOnWorld(int x, int y) const;
+	bool isPositionFree(Position position) const;
 
 public:
+	World();
 	World(int worldX, int worldY);
-	World() : World(6, 6) {};
 
-	int getWorldX();
+	int getWorldX() const;
 	void setWorldX(int worldX);
-	int getWorldY();
+	int getWorldY() const;
 	void setWorldY(int worldY);
-
-	int getTurn();
+	int getTurn() const;
 	
-	void addOrganism(Organism *organism);
-	vector<Position> getVectorOfFreePositionsAround(Position position);
+
+	void addOrganismPtr(std::unique_ptr<Organism> org);
+
+	template <typename T, typename... Args>
+    T* addOrganism(Args&&... args) {
+        static_assert(std::is_base_of<Organism, T>::value,
+                      "T must derive from Organism");
+        auto org = std::make_unique<T>(std::forward<Args>(args)...);
+        T* rawPtr = ptr.get();
+		addOrganismPtr(std::move(org));
+        return rawPtr;
+    }
+	void removeOrganism(Organism* org);
+	std::vector<Position> getVectorOfFreePositionsAround(Position position) const;
+
 	void makeTurn();
-
-	void writeWorld(string fileName);
-	void readWorld(string fileName);
-	
-	string toString();
-
+	void writeWorld(std::string fileName) const;
+	void readWorld(std::string fileName);
+	std::string toString() const;
 };
 

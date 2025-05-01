@@ -1,28 +1,44 @@
 #pragma once
-#include <string>
+#include <memory>
+#include <vector>
 #include "Position.h"
-
-using namespace std;
+#include "LifeRecord.h"
 
 class Organism
 {
 private:
 	int power;
+	int initiative;
+	int liveLength;
+	int powerToReproduce;
 	Position position;
-	string species;
+	std::string species;
+	std::shared_ptr<LifeRecord> lifeRecord;
+	std::vector<std::shared_ptr<LifeRecord>> ancestorHistory;
 public:
-	Organism(int power, Position position);
-	Organism() : power(0), position(0, 0), species("O") {};
+	Organism(int power, int initiative, int liveLength, int powerToReproduce, Position position, int birthTurn);
+	Organism(int power, int initiative, int liveLength, int powerToReproduce, Position position, int birthTurn, std::vector<std::shared_ptr<LifeRecord>> ancestorHistory);	
 
-	int getPower();
+	Organism(const Organism&) = default;
+    Organism(Organism&&) noexcept = default;
+    Organism& operator=(const Organism&) = default;
+    Organism& operator=(Organism&&) noexcept = default;
+    virtual ~Organism() = default;
+
+	int getPower() const;
 	void setPower(int power);
-	Position getPosition();
+	int getInitiative() const;
+	int getLiveLength() const;
+	void setLiveLength(int liveLength);
+	Position getPosition() const;
 	void setPosition(Position position);
-	string getSpecies();
-	void setSpecies(string spec);
+	std::string getSpecies() const;
 
-	string toString();
+	std::string toString() const;
+	bool canReproduce() const;
+	bool isDead() const;
+	void recordDeath(int turn);
 
-	virtual void move(int dx, int dy);
-
+	virtual std::unique_ptr<Organism> clone(const Position& pos, int birthTurn) const = 0;
+	virtual void move(int dx, int dy) = 0;
 };

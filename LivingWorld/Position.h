@@ -1,8 +1,6 @@
 #pragma once
 #include <string>
 
-using namespace std;
-
 class Position {
 private:
 	int x;
@@ -12,13 +10,13 @@ public:
 	Position(int x, int y);
 	Position() : x(0), y(0) {}
 
-	int getX();
+	int getX() const;
 	void setX(int x);
-	int getY();
+	int getY() const;
 	void setY(int y);
 
-	string toString();
+	std::string toString() const;
 
-	double distance(Position position);
+	double distance(Position position) const;
 	void move(int dx, int dy);
 };

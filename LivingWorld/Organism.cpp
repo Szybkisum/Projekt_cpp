@@ -1,15 +1,31 @@
 #include "Organism.h"
 
-Organism::Organism(int power, Position position)
-{
-	setPower(power);
-	setPosition(position);
-	setSpecies("O");
-}
+Organism::Organism(int power, int initiative, int liveLength, int powerToReproduce, Position position, int birthTurn)
+	: power(power),
+	initiative(initiative),
+	liveLength(liveLength),
+	powerToReproduce(powerToReproduce),
+	position(position),
+	lifeRecord(std::make_shared<LifeRecord>(birthTurn)),
+	ancestorHistory{lifeRecord},
+	species("O") {}
 
-int Organism::getPower()
+Organism::Organism(int power, int initiative, int liveLength, int powerToReproduce, Position position, int birthTurn, std::vector<std::shared_ptr<LifeRecord>> ancestorHistory)
+	: power(power),
+	initiative(initiative),
+	liveLength(liveLength),
+	powerToReproduce(powerToReproduce),
+	position(position),
+	lifeRecord(std::make_shared<LifeRecord>(birthTurn)),
+	ancestorHistory(ancestorHistory),
+	species("O")
+	{
+		ancestorHistory.push_back(lifeRecord);
+	}
+
+int Organism::getPower() const
 {
-	return this->power;
+	return power;
 }
 
 void Organism::setPower(int power)
@@ -17,9 +33,24 @@ void Organism::setPower(int power)
 	this->power = power;
 }
 
-Position Organism::getPosition()
+int Organism::getInitiative() const
 {
-	return this->position;
+	return initiative;
+}
+
+int Organism::getLiveLength() const
+{
+	return liveLength;
+}
+
+void Organism::setLiveLength(int liveLength)
+{
+	this->liveLength = liveLength;
+}
+
+Position Organism::getPosition() const
+{
+	return position;
 }
 
 void Organism::setPosition(Position position)
@@ -27,24 +58,38 @@ void Organism::setPosition(Position position)
 	this->position = position;
 }
 
-string Organism::toString()
+std::string Organism::getSpecies() const
 {
-	return "{ species: " + this->getSpecies() + 
-		", power: " + to_string(getPower()) + 
-		", position: " + getPosition().toString() + "}";
+	return species;
+}
+
+bool Organism::canReproduce() const
+{
+	return power >= powerToReproduce;
+}
+
+bool Organism::isDead() const
+{
+	return liveLength > 0;
+}
+
+std::string Organism::toString() const
+{
+	return "{ species: " + species +
+		   ", power: " + std::to_string(power) +
+		   ", initiative: " + std::to_string(initiative) +
+		   ", liveLength: " + std::to_string(liveLength) +
+		   ", powerToReproduce: " + std::to_string(powerToReproduce) +
+		   ", position: " + position.toString() + 
+		   ", lifeRecord: " + lifeRecord->toString() + "}";
+}
+
+void Organism::recordDeath(int deathTurn)
+{
+    lifeRecord->setDeathTurn(deathTurn);
 }
 
 void Organism::move(int dx, int dy)
 {
 	position.move(dx, dy);
-}
-
-string Organism::getSpecies()
-{
-	return this->species;
-}
-
-void Organism::setSpecies(string spec)
-{
-	this->species = spec;
 }

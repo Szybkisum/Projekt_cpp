@@ -1,15 +1,12 @@
 #include "Position.h"
+#include <cmath>
 
 
-Position::Position(int x, int y)
+Position::Position(int x, int y) : x(x), y(y) {};
+
+int Position::getX() const
 {
-	setX(x);
-	setY(y);
-}
-
-int Position::getX()
-{
-	return this->x;
+	return x;
 }
 
 void Position::setX(int x)
@@ -20,9 +17,9 @@ void Position::setX(int x)
 		this->x = 0;
 }
 
-int Position::getY()
+int Position::getY() const
 {
-	return this->y;
+	return y;
 }
 
 void Position::setY(int y)
@@ -33,20 +30,20 @@ void Position::setY(int y)
 		this->y = 0;
 }
 
-string Position::toString()
+std::string Position::toString() const
 {
-	return "(" + to_string(getX()) + ", " + to_string(getY()) + ")";
+	return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
 }
 
-double Position::distance(Position position)
+double Position::distance(Position position) const
 {
-	double dx = (double)this->getX() - (double)position.getX();
-	double dy = (double)this->getY() - (double)position.getY();
+	double dx = (double)x - (double)position.x;
+	double dy = (double)y - (double)position.y;
 	return sqrt( (dx * dx) + (dy * dy) );
 }
 
 void Position::move(int dx, int dy)
 {
-	setX(getX() + dx);
-	setY(getY() + dy);
+	this->x = (x + dx);
+	this->y =(y + dy);
 }
