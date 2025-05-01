@@ -33,12 +33,14 @@ public:
 	Position getPosition() const;
 	void setPosition(Position position);
 	std::string getSpecies() const;
+	void setSpecies(std::string species);
+	const std::vector<std::shared_ptr<LifeRecord>>& getAncestorHistory() const;
 
 	std::string toString() const;
 	bool canReproduce() const;
 	bool isDead() const;
 	void recordDeath(int turn);
 
-	virtual std::unique_ptr<Organism> clone(const Position& pos, int birthTurn) const = 0;
+	virtual std::shared_ptr<Organism> clone(const Position& pos, int birthTurn) const = 0;
 	virtual void move(int dx, int dy) = 0;
 };

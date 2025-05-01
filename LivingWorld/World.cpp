@@ -15,7 +15,7 @@ std::string World::getSpeciesFromPosition(int x, int y) const
 {	
 	auto it = std::find_if(
         organisms.begin(), organisms.end(),
-        [&](const std::unique_ptr<Organism>& org) {
+        [&](const std::shared_ptr<Organism>& org) {
             return org->getPosition().getX() == x && org->getPosition().getY() == y;
         }
     );
@@ -76,58 +76,43 @@ std::vector<Position> World::getVectorOfFreePositionsAround(Position position) c
 	return result;
 }
 
-void World::addOrganismPtr(std::unique_ptr<Organism> org) 
+void World::addOrganismPtr(std::shared_ptr<Organism> org) 
 {
 	auto it = std::find_if(
 		organisms.begin(), organisms.end(),
-		[&](const std::unique_ptr<Organism>& existing) {
+		[&](const std::shared_ptr<Organism>& existing) {
 			return existing->getInitiative() < org->getInitiative();
 		}
 	);
-	organisms.insert(it, std::move(org));
+	organisms.insert(it, org);
 };
-
-void World::removeOrganism(Organism* org)
-{
-	org->recordDeath(turn);
-	auto it = std::find_if(
-        organisms.begin(), organisms.end(),
-        [org](const auto& u){ return u.get() == org; });
-    if (it != organisms.end()) organisms.erase(it);
-}
 
 void World::makeTurn()
 {
-	std::vector<Organism*> current;
-    current.reserve(organisms.size());
-    for (auto& uptr : organisms) 
-        current.push_back(uptr.get());
+	size_t i = 0;
+	while (i < organisms.size()) {
+		std::shared_ptr<Organism> org = organisms[i];
 
-	for (Organism* org : current) {
+        std::vector<Position> freePositions = getVectorOfFreePositionsAround(org->getPosition());
+        std::uniform_int_distribution<size_t> dist(0, freePositions.size() - 1);
+        bool reproduced = false;
 
-		auto it = std::find_if(
-            organisms.begin(), organisms.end(),
-            [org](const std::unique_ptr<Organism>& u) { return u.get() == org; });
-        if (it == organisms.end()) continue;
-
-		std::vector<Position> freePositions = getVectorOfFreePositionsAround(org->getPosition());
-
-		if (!freePositions.empty()) {
-			std::uniform_int_distribution<size_t> dist(0, freePositions.size() - 1);
+		if (!freePositions.empty() && org->canReproduce()) {
 			Position pos = freePositions[dist(rng())];
-			if (org->canReproduce()) {
-				std::unique_ptr<Organism> child = org->clone(pos, turn);
-            	addOrganismPtr(std::move(child));
-				org->setPower(org->getPower() / 2);
-			} else {
-				org->setPosition(pos);
-			}
+			std::shared_ptr<Organism> child = org->clone(pos, turn);
+            addOrganismPtr(child);
+			org->setPower(org->getPower() / 2);
+			reproduced = true;
+		} else if (!freePositions.empty()) {
+			Position pos = freePositions[dist(rng())];
+			org->setPosition(pos);
 		}
+		if (!reproduced) org->setPower(org->getPower() + 1);
 		org -> setLiveLength(org->getLiveLength() - 1);
 		if (org -> isDead()){
-			
-		}
-		org -> setPower(org->getPower() + 1);
+			org -> recordDeath(turn);
+            organisms.erase(organisms.begin() + i);
+		} else i++;
 	}
 	turn++;
 }
@@ -222,3 +207,9 @@ std::string World::toString() const
 	return result;
 }
 
+void World::printOrganisms() const
+{
+	for (auto& uptr : organisms) {
+		std::cout << uptr->toString() << std::endl;
+	}
+}

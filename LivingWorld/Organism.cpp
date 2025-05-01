@@ -1,4 +1,5 @@
 #include "Organism.h"
+#include <iostream>
 
 Organism::Organism(int power, int initiative, int liveLength, int powerToReproduce, Position position, int birthTurn)
 	: power(power),
@@ -17,10 +18,10 @@ Organism::Organism(int power, int initiative, int liveLength, int powerToReprodu
 	powerToReproduce(powerToReproduce),
 	position(position),
 	lifeRecord(std::make_shared<LifeRecord>(birthTurn)),
-	ancestorHistory(ancestorHistory),
+	ancestorHistory(std::move(ancestorHistory)),
 	species("O")
 	{
-		ancestorHistory.push_back(lifeRecord);
+		this->ancestorHistory.push_back(lifeRecord);
 	}
 
 int Organism::getPower() const
@@ -63,6 +64,15 @@ std::string Organism::getSpecies() const
 	return species;
 }
 
+void Organism::setSpecies(std::string species)
+{
+	this->species = species;
+}
+
+const std::vector<std::shared_ptr<LifeRecord>>& Organism::getAncestorHistory() const {
+    return ancestorHistory;
+}
+
 bool Organism::canReproduce() const
 {
 	return power >= powerToReproduce;
@@ -70,18 +80,23 @@ bool Organism::canReproduce() const
 
 bool Organism::isDead() const
 {
-	return liveLength > 0;
+	return liveLength <= 0;
 }
 
 std::string Organism::toString() const
 {
-	return "{ species: " + species +
+	std::string result = "{ species: " + species +
 		   ", power: " + std::to_string(power) +
 		   ", initiative: " + std::to_string(initiative) +
 		   ", liveLength: " + std::to_string(liveLength) +
 		   ", powerToReproduce: " + std::to_string(powerToReproduce) +
 		   ", position: " + position.toString() + 
-		   ", lifeRecord: " + lifeRecord->toString() + "}";
+		   ", lifeRecord: " + lifeRecord->toString() + 
+		   ", ancestorHistiry: ";
+	for (auto& rec : ancestorHistory) {
+		result += rec -> toString() + " ";
+	}
+	return result + "}";
 }
 
 void Organism::recordDeath(int deathTurn)
