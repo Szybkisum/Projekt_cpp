@@ -12,11 +12,6 @@ Plant::Plant(int power, int initiative, int liveLength, int powerToReproduce, Po
 	setSpecies("P");
 }
 
-std::shared_ptr<Organism> Plant::clone(const Position& pos, int birthTurn) const
-{
-    return std::make_shared<Plant>(0, 5, 5, 2, pos, birthTurn, getAncestorHistory());
-}
-
 void Plant::move(Position pos)
 {
 	return;
