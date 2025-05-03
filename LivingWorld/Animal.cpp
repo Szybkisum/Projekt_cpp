@@ -14,6 +14,16 @@ Animal::Animal(int power, int initiative, int liveLength, int powerToReproduce, 
 	setSpecies("A");
 }
 
+void Animal::collision(std::shared_ptr<Organism> other)
+{
+    if (getPower() > other -> getPower()) {
+        other -> setLiveLength(0);
+        if (other -> getSpecies() == "T") {
+            setLiveLength(0);
+        }
+    }
+}
+
 void Animal::move(Position position)
 {
     lastPosition = getPosition();

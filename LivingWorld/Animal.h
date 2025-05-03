@@ -9,5 +9,6 @@ class Animal : public Organism
         Animal(int power, int initiative, int liveLength, int powerToReproduce, Position position, int birthTurn);
         Animal(int power, int initiative, int liveLength, int powerToReproduce, Position position, int birthTurn, std::vector<std::shared_ptr<LifeRecord>> ancestorHistory);
 
+        void collision(std::shared_ptr<Organism> other) override;
         void move(Position position) override;
 };

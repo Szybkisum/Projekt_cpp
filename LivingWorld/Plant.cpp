@@ -17,6 +17,11 @@ bool Plant::interactsWith(std::string species) const
 	return false;
 }
 
+void Plant::collision(std::shared_ptr<Organism> other) 
+{
+	return;
+}
+
 void Plant::move(Position pos)
 {
 	return;
