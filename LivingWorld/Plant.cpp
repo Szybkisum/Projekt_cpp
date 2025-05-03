@@ -12,6 +12,11 @@ Plant::Plant(int power, int initiative, int liveLength, int powerToReproduce, Po
 	setSpecies("P");
 }
 
+bool Plant::interactsWith(std::string species) const
+{
+	return false;
+}
+
 void Plant::move(Position pos)
 {
 	return;

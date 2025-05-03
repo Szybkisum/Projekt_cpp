@@ -1,4 +1,5 @@
 #include "Wolf.h"
+#include <unordered_set>
 
 Wolf::Wolf(Position position, int birthTurn)
     : Animal(8, 5, 20, 16, position, birthTurn)
@@ -10,6 +11,12 @@ Wolf::Wolf(Position position, int birthTurn, std::vector<std::shared_ptr<LifeRec
     : Animal(8, 5, 20, 16, position, birthTurn, ancestorHistory)
 {
     setSpecies("W");
+}
+
+bool Wolf::interactsWith(std::string species) const
+{
+    std::unordered_set<std::string> interactions = {"S", "T"};
+    return (interactions.count(species)) ? true : false;
 }
 
 std::shared_ptr<Organism> Wolf::clone(const Position& pos, int birthTurn) const

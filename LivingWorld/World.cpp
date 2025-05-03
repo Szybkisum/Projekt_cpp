@@ -11,19 +11,21 @@ static std::mt19937& rng() {
 World::World() : World(6, 6) {};
 World::World(int worldX, int worldY) : worldX(worldX), worldY(worldY) {};
 
-std::string World::getSpeciesFromPosition(int x, int y) const
-{	
+std::shared_ptr<Organism> World::getOrganismFromPosition(int x, int y) const 
+{
 	auto it = std::find_if(
         organisms.begin(), organisms.end(),
         [&](const std::shared_ptr<Organism>& org) {
             return org->getPosition().getX() == x && org->getPosition().getY() == y;
         }
     );
+	return (it != organisms.end()) ? *it : nullptr;
+}
 
-	if (it != organisms.end()) {
-		return (*it)->getSpecies();
-	}
-	return "";
+std::string World::getSpeciesFromPosition(int x, int y) const
+{	
+	std::shared_ptr<Organism> org = getOrganismFromPosition(x, y);
+	return (org) ? org->getSpecies() : "";
 }
 
 bool World::isPositionOnWorld(int x, int y) const
@@ -76,6 +78,22 @@ std::vector<Position> World::getVectorOfFreePositionsAround(Position position) c
 	return result;
 }
 
+std::vector<Position> World::getVectorOfPossiblePositionsForOrganism(std::shared_ptr<Organism> org) const
+{
+	Position position = org->getPosition();
+	int pos_x = position.getX(), pos_y = position.getY();
+	std::vector<Position> result;
+	for (int x = -1; x <= 1; ++x)
+		for (int y = -1; y <= 1; ++y) {
+			if (x == 0 && y == 0) continue;
+			int new_x = pos_x + x, new_y = pos_y + y;
+			if (isPositionOnWorld(new_x, new_y) &&
+			(isPositionFree(Position(new_x, new_y)) || org -> interactsWith(getSpeciesFromPosition(new_x, new_y))))
+				result.emplace_back(new_x, new_y);
+		}
+	return result;
+}
+
 void World::addOrganismPtr(std::shared_ptr<Organism> org) 
 {
 	auto it = std::find_if(
@@ -93,8 +111,9 @@ void World::makeTurn()
 	while (i < organisms.size()) {
 		std::shared_ptr<Organism> org = organisms[i];
 
-        std::vector<Position> freePositions = getVectorOfFreePositionsAround(org->getPosition());
-        std::uniform_int_distribution<size_t> dist(0, freePositions.size() - 1);
+        std::vector<Position> possiblePositions = getVectorOfPossiblePositionsForOrganism(org);
+		std::vector<Position> freePositions = getVectorOfFreePositionsAround(org->getPosition());
+        std::uniform_int_distribution<size_t> dist(0, possiblePositions.size() - 1);
         bool reproduced = false;
 
 		if (!freePositions.empty() && org->canReproduce()) {
@@ -103,8 +122,9 @@ void World::makeTurn()
             addOrganismPtr(child);
 			org->setPower(org->getPower() / 2);
 			reproduced = true;
-		} else if (!freePositions.empty()) {
-			Position pos = freePositions[dist(rng())];
+		} else if (!possiblePositions.empty()) {
+			Position pos = possiblePositions[dist(rng())];
+			// missing code
 			org->move(pos);
 		}
 		if (!reproduced) org->setPower(org->getPower() + 1);

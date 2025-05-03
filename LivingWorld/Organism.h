@@ -41,6 +41,7 @@ public:
 	bool isDead() const;
 	void recordDeath(int turn);
 
+	virtual bool interactsWith(std::string species) const = 0;
 	virtual std::shared_ptr<Organism> clone(const Position& pos, int birthTurn) const = 0;
 	virtual void move(Position position) = 0;
 };

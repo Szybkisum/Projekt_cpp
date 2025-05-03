@@ -2,6 +2,9 @@
 #include "Position.h"
 #include "Grass.h"
 #include "Sheep.h"
+#include "Dandelion.h"
+#include "Wolf.h"
+#include "Toadstool.h"
 #include "World.h"
 
 using namespace std;
@@ -16,7 +19,6 @@ int main()
 	world.addOrganism<Grass>(p1, world.getTurn());
 	world.addOrganism<Sheep>(p2, world.getTurn());
 
-	// Tura 0
 	cout << world.toString() << endl;
 	world.printOrganisms();
 

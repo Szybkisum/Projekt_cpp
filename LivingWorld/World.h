@@ -14,6 +14,7 @@ private:
 	std::vector<std::shared_ptr<Organism>> organisms;
 	char separator = '.';
 
+	std::shared_ptr<Organism> World::getOrganismFromPosition(int x, int y) const;
 	std::string getSpeciesFromPosition(int x, int y) const;
 	bool isPositionOnWorld(int x, int y) const;
 	bool isPositionFree(Position position) const;
@@ -41,6 +42,7 @@ public:
         return rawPtr;
     }
 	std::vector<Position> getVectorOfFreePositionsAround(Position position) const;
+	std::vector<Position> getVectorOfPossiblePositionsForOrganism(std::shared_ptr<Organism> org) const;
 
 	void makeTurn();
 	void writeWorld(std::string fileName) const;
