@@ -1,15 +1,20 @@
 #include "Dandelion.h"
 
+Dandelion::Dandelion() : Plant()
+{
+    species = "D";
+}
+
 Dandelion::Dandelion(Position position, int birthTurn)
     : Plant(0, 0, 6, 2, position, birthTurn)
 {
-    setSpecies("D");
+    species = "D";
 }
 
 Dandelion::Dandelion(Position position, int birthTurn, std::vector<std::shared_ptr<LifeRecord>> ancestorHistory)
     : Plant(0, 0, 6, 2, position, birthTurn, ancestorHistory)
 {
-    setSpecies("D");
+    species = "D";
 }
 
 std::shared_ptr<Organism> Dandelion::clone(const Position& pos, int birthTurn) const

@@ -1,6 +1,16 @@
 #include "Organism.h"
 #include <iostream>
 
+Organism::Organism()
+	: power(0),
+	initiative(0),
+	liveLength(6),
+	powerToReproduce(3),
+	position(0, 0),
+	lifeRecord(std::make_shared<LifeRecord>(0)),
+	ancestorHistory{lifeRecord},
+	species("O") {}
+
 Organism::Organism(int power, int initiative, int liveLength, int powerToReproduce, Position position, int birthTurn)
 	: power(power),
 	initiative(initiative),
@@ -47,6 +57,11 @@ int Organism::getLiveLength() const
 void Organism::setLiveLength(int liveLength)
 {
 	this->liveLength = liveLength;
+}
+
+int Organism::getPowerToReproduce() const
+{
+	return powerToReproduce;
 }
 
 Position Organism::getPosition() const

@@ -1,4 +1,5 @@
 #include "LifeRecord.h"
+#include <fstream>
 
 LifeRecord::LifeRecord(int birthTurn) : birthTurn(birthTurn), deathTurn(-1) {}
 
@@ -22,3 +23,14 @@ std::string LifeRecord::toString() const
     return "(" + std::to_string(birthTurn) + ", " + std::to_string(deathTurn) + ")";
 }
 
+void LifeRecord::saveTo(std::ostream& out) const
+{
+    out.write(reinterpret_cast<const char*>(&birthTurn), sizeof(birthTurn));
+    out.write(reinterpret_cast<const char*>(&deathTurn), sizeof(deathTurn));
+}
+
+void LifeRecord::loadFrom(std::istream& in)
+{
+    in.read(reinterpret_cast<char*>(&birthTurn), sizeof(birthTurn));
+    in.read(reinterpret_cast<char*>(&deathTurn), sizeof(deathTurn));
+}

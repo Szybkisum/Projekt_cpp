@@ -1,16 +1,21 @@
 #include "Wolf.h"
 #include <unordered_set>
 
+Wolf::Wolf() : Animal()
+{
+    species = "W";
+}
+
 Wolf::Wolf(Position position, int birthTurn)
     : Animal(8, 5, 20, 16, position, birthTurn)
 {
-    setSpecies("W");
+    species = "W";
 }
 
 Wolf::Wolf(Position position, int birthTurn, std::vector<std::shared_ptr<LifeRecord>> ancestorHistory)
     : Animal(8, 5, 20, 16, position, birthTurn, ancestorHistory)
 {
-    setSpecies("W");
+    species = "W";
 }
 
 bool Wolf::interactsWith(std::string species) const

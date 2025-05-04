@@ -1,6 +1,14 @@
-#include <random>
 #include "World.h"
-#include <unordered_set>
+#include "Grass.h"
+#include "Sheep.h"
+#include "Dandelion.h"
+#include "Wolf.h"
+#include "Toadstool.h"
+#include <random>
+#include <fstream>
+#include <ctime>
+#include <algorithm>
+#include <iostream>
 
 static std::mt19937& rng() {
     static std::random_device rd;
@@ -94,6 +102,15 @@ std::vector<Position> World::getVectorOfPossiblePositionsForOrganism(std::shared
 	return result;
 }
 
+void World::removeOrganism(std::shared_ptr<Organism> org)
+{
+	organisms.erase(
+		std::find_if(
+			organisms.begin(), organisms.end(),
+			[&](const std::shared_ptr<Organism>& ptr){ return ptr.get() == org.get(); }
+	));
+}
+
 void World::addOrganismPtr(std::shared_ptr<Organism> org) 
 {
 	auto it = std::find_if(
@@ -128,143 +145,93 @@ void World::makeTurn()
 			if (other) {
 				org->collision(other);
 				if (other->isDead()) {
-					organisms.erase(
-						std::find_if(
-							organisms.begin(), organisms.end(),
-							[&](const std::shared_ptr<Organism>& ptr){ return ptr.get() == other.get(); }
-					));
+					other->recordDeath(turn);
+					removeOrganism(other);
 				}
 			} else {
 				org -> move(pos);
 			}
 		}
 		if (!reproduced) org->setPower(org->getPower() + 1);
-		org -> setLiveLength(org->getLiveLength() - 1);
-		if (org -> isDead()){
-			org -> recordDeath(turn);
-            organisms.erase(
-				std::find_if(
-					organisms.begin(), organisms.end(),
-					[&](const std::shared_ptr<Organism>& ptr){ return ptr.get() == org.get(); }
-			));
+		org->setLiveLength(org->getLiveLength() - 1);
+		if (org->isDead()){
+			org->recordDeath(turn);
+            removeOrganism(org);
 		}
 	}
 	turn++;
-
-	// size_t i = 0;
-	// while (i < organisms.size()) {
-	// 	std::shared_ptr<Organism> org = organisms[i];
-
-    //     std::vector<Position> possiblePositions = getVectorOfPossiblePositionsForOrganism(org);
-	// 	std::vector<Position> freePositions = getVectorOfFreePositionsAround(org->getPosition());
-    //     std::uniform_int_distribution<size_t> dist(0, possiblePositions.size() - 1);
-    //     bool reproduced = false;
-
-	// 	if (!freePositions.empty() && org->canReproduce()) {
-	// 		Position pos = freePositions[dist(rng())];
-	// 		std::shared_ptr<Organism> child = org->clone(pos, turn);
-    //         addOrganismPtr(child);
-	// 		org->setPower(org->getPower() / 2);
-	// 		reproduced = true;
-	// 	} else if (!possiblePositions.empty()) {
-	// 		Position pos = possiblePositions[dist(rng())];
-	// 		auto other = getOrganismFromPosition(pos.getX(), pos.getY());
-	// 		if (other) {
-	// 			org->collision(other);
-	// 			auto it = std::find_if(
-	// 				organisms.begin(), organisms.end(),
-	// 				[&](auto const& ptr){ return ptr.get() == other.get(); }
-	// 			);
-	// 			size_t otherIdx = std::distance(organisms.begin(), it);
-	// 			organisms.erase(it);
-	// 			if (otherIdx < i) {
-	// 				--i;
-	// 			}
-	// 		} else {
-	// 			org -> move(pos);
-	// 		}
-	// 	}
-	// 	if (!reproduced) org->setPower(org->getPower() + 1);
-	// 	org -> setLiveLength(org->getLiveLength() - 1);
-	// 	if (org -> isDead()){
-	// 		org -> recordDeath(turn);
-    //         organisms.erase(organisms.begin() + i);
-	// 	} else i++;
-	// }
-	// turn++;
 }
 
-// void World::writeWorld(string fileName)
-// {
-// 	fstream my_file;
-// 	my_file.open(fileName, ios::out | ios::binary);
-// 	if (my_file.is_open()) {
-// 		my_file.write((char*)&this->worldX, sizeof(int));
-// 		my_file.write((char*)&this->worldY, sizeof(int));
-// 		my_file.write((char*)&this->turn, sizeof(int));
-// 		int orgs_size = this->organisms.size();
-// 		my_file.write((char*)&orgs_size, sizeof(int));
-// 		for (int i = 0; i < orgs_size; i++) {
-// 			int data;
-// 			data = this->organisms[i].getPower();
-// 			my_file.write((char*)&data, sizeof(int));
-// 			data = this->organisms[i].getPosition().getX();
-// 			my_file.write((char*)&data, sizeof(int));
-// 			data = this->organisms[i].getPosition().getY();
-// 			my_file.write((char*)&data, sizeof(int));
-// 			string s_data = this->organisms[i].getSpecies();
-// 			int s_size = s_data.size();
-// 			my_file.write((char*)&s_size, sizeof(int));
-// 			my_file.write(s_data.data(), s_data.size());
-// 		}
-// 		my_file.close();
-// 	}
-// }
+void World::saveTo(std::string fileName) const
+{
+	std::ofstream out(fileName, std::ios::binary);
+	if (!out) return;
+	out.write(reinterpret_cast<const char*>(&worldX), sizeof(worldX));
+	out.write(reinterpret_cast<const char*>(&worldY), sizeof(worldY));
+	out.write(reinterpret_cast<const char*>(&turn),   sizeof(turn));
 
-// void World::readWorld(string fileName)
-// {
-// 	fstream my_file;
-// 	my_file.open(fileName, ios::in | ios::binary);
-// 	if (my_file.is_open()) {
-// 		int result;
-// 		my_file.read((char*)&result, sizeof(int));
-// 		this->worldX = (int)result;
-// 		my_file.read((char*)&result, sizeof(int));
-// 		this->worldY = (int)result;
-// 		my_file.read((char*)&result, sizeof(int));
-// 		this->turn = (int)result;
-// 		my_file.read((char*)&result, sizeof(int));
-// 		int orgs_size = (int)result;
-// 		vector<Organism> new_organisms;
-// 		for (int i = 0; i < orgs_size; i++) {
-// 			int power;
-// 			my_file.read((char*)&result, sizeof(int));
-// 			power = (int)result;
+	std::unordered_map<LifeRecord*, int> recordToID;
+	std::vector<std::shared_ptr<LifeRecord>> idToRecord;
+	int nextID = 0;
 
-// 			int pos_x;
-// 			my_file.read((char*)&result, sizeof(int));
-// 			pos_x = (int)result;
-// 			int pos_y;
-// 			my_file.read((char*)&result, sizeof(int));
-// 			pos_y = (int)result;
-// 			Position pos{ pos_x, pos_y };
-			
-// 			int s_size;
-// 			my_file.read((char*)&result, sizeof(int));
-// 			s_size = (int)result;
+	for (const std::shared_ptr<Organism>& org : organisms) {
+  		for (const std::shared_ptr<LifeRecord>& recPtr : org->getAncestorHistory()) {
+    		auto raw = recPtr.get();
+    		if (!recordToID.count(raw)) {
+      			recordToID[raw] = nextID++;
+      			idToRecord.push_back(recPtr);
+    		}
+  		}
+	}
 
-// 			string species;
-// 			species.resize(s_size);
-// 			my_file.read((char*)&species[0], s_size);
-			
-// 			Organism org(power, pos);
-// 			org.setSpecies(species);
-// 			new_organisms.push_back(org);
-// 		}
-// 		this->organisms = new_organisms;
-// 		my_file.close();
-// 	}
-// }
+	int recCount = idToRecord.size();
+	out.write(reinterpret_cast<const char*>(&recCount), sizeof(recCount));
+	for (auto& rec : idToRecord) {
+  		rec->saveTo(out);  
+	}
+
+	int count = organisms.size();
+	out.write(reinterpret_cast<const char*>(&count), sizeof(count));
+	for (auto& org : organisms) {
+		org->saveTo(out, recordToID);
+	}
+}
+
+void World::loadFrom(const std::string& fileName) {
+    std::ifstream in(fileName, std::ios::binary);
+    if (!in) return;
+    organisms.clear();
+    in.read(reinterpret_cast<char*>(&worldX), sizeof(worldX));
+    in.read(reinterpret_cast<char*>(&worldY), sizeof(worldY));
+    in.read(reinterpret_cast<char*>(&turn), sizeof(turn));
+
+    int recordCount;
+    in.read(reinterpret_cast<char*>(&recordCount), sizeof(recordCount));
+    std::vector<std::shared_ptr<LifeRecord>> idToRecord(recordCount);
+
+    for (int i = 0; i < recordCount; ++i) {
+        auto rec = std::make_shared<LifeRecord>();
+        rec->loadFrom(in);
+        idToRecord[i] = rec;
+    }
+
+    int organismCount;
+    in.read(reinterpret_cast<char*>(&organismCount), sizeof(organismCount));
+    for (int i = 0; i < organismCount; ++i) {
+		int ssz;
+    	in.read(reinterpret_cast<char*>(&ssz), sizeof(ssz));
+    	std::string species(ssz, '\0');
+    	in.read(&species[0], ssz);
+		std::shared_ptr<Organism> org;
+		if (species == "G") org = std::make_shared<Grass>();
+		else if (species == "S") org = std::make_shared<Sheep>();
+		else if (species == "D") org = std::make_shared<Dandelion>();
+		else if (species == "W") org = std::make_shared<Wolf>();
+		else if (species == "T") org = std::make_shared<Toadstool>();
+        org->loadFrom(in, idToRecord);
+        addOrganismPtr(org);
+    }
+}
 
 std::string World::toString() const
 {

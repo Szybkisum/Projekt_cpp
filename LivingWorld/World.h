@@ -1,8 +1,5 @@
 #pragma once
 
-#include <ctime>
-#include <algorithm>
-#include <iostream>
 #include "Organism.h"
 
 class World
@@ -30,6 +27,7 @@ public:
 	int getTurn() const;
 	
 
+	void removeOrganism(std::shared_ptr<Organism> org);
 	void addOrganismPtr(std::shared_ptr<Organism> org);
 
 	template <typename T, typename... Args>
@@ -45,8 +43,8 @@ public:
 	std::vector<Position> getVectorOfPossiblePositionsForOrganism(std::shared_ptr<Organism> org) const;
 
 	void makeTurn();
-	void writeWorld(std::string fileName) const;
-	void readWorld(std::string fileName);
+	void saveTo(std::string fileName) const;
+	void loadFrom(const std::string& fileName);
 	std::string toString() const;
 	void printOrganisms() const;
 };

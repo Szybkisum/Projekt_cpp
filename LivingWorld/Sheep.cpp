@@ -1,16 +1,21 @@
 #include "Sheep.h"
 #include <unordered_set>
 
+Sheep::Sheep() : Animal()
+{
+    species = "S";
+}
+
 Sheep::Sheep(Position position, int birthTurn)
     : Animal(3, 3, 10, 6, position, birthTurn)
 {
-    setSpecies("S");
+    species = "S";
 }
 
 Sheep::Sheep(Position position, int birthTurn, std::vector<std::shared_ptr<LifeRecord>> ancestorHistory)
     : Animal(3, 3, 10, 6, position, birthTurn, ancestorHistory)
 {
-    setSpecies("S");
+    species = "S";
 }
 
 bool Sheep::interactsWith(std::string species) const

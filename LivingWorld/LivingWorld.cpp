@@ -28,8 +28,25 @@ int main()
 	cout << world.toString() << endl;
 	world.printOrganisms();
 
-	int turns = 20;
-	for (int i = 0; i < turns; i++) {
+	for (int i = 0; i < 10; i++) {
+		world.makeTurn();
+		cout << world.toString() << endl;
+		world.printOrganisms();
+	}
+
+	std::cout << "Saving" << std::endl;
+	world.saveTo("world.bin");
+
+	for (int i = 0; i < 10; i++) {
+		world.makeTurn();
+		cout << world.toString() << endl;
+		world.printOrganisms();
+	}
+
+	std::cout << "Loading" << std::endl;
+	world.loadFrom("world.bin");
+
+	for (int i = 0; i < 10; i++) {
 		world.makeTurn();
 		cout << world.toString() << endl;
 		world.printOrganisms();
