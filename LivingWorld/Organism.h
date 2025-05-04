@@ -48,6 +48,6 @@ public:
 	virtual void collision(std::shared_ptr<Organism> other) = 0;
 	virtual std::shared_ptr<Organism> clone(const Position& pos, int birthTurn) const = 0;
 	virtual void move(Position position) = 0;
-	virtual void saveTo(std::ostream& out, const std::unordered_map<LifeRecord*,int>& recordToID) const = 0;
-	virtual void loadFrom(std::istream& in, const std::vector<std::shared_ptr<LifeRecord>> idToRecord) = 0;
+	virtual void saveTo(std::ostream& out, const std::unordered_map<LifeRecord*,int>& recordToID) const;
+	virtual void loadFrom(std::istream& in, const std::vector<std::shared_ptr<LifeRecord>>& idToRecord);
 };
