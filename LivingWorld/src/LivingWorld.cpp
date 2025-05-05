@@ -35,7 +35,7 @@ int main()
 	}
 
 	std::cout << "Saving" << std::endl;
-	world.saveTo("world.bin");
+	world.saveTo("saves/world.bin");
 
 	for (int i = 0; i < 10; i++) {
 		world.makeTurn();
@@ -44,7 +44,7 @@ int main()
 	}
 
 	std::cout << "Loading" << std::endl;
-	world.loadFrom("world.bin");
+	world.loadFrom("saves/world.bin");
 
 	for (int i = 0; i < 10; i++) {
 		world.makeTurn();
