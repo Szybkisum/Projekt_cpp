@@ -1,4 +1,6 @@
 #include <iostream>
+#include "rendering.h"
+#include <SDL.h>
 #include "Position.h"
 #include "Grass.h"
 #include "Sheep.h"
@@ -9,48 +11,39 @@
 
 using namespace std;
 
-int main()
-{
-	World world(10, 10);
-
-	Position p1{ 1, 1 };
-	Position p2{ 3, 5 };
-	Position p3{ 3, 9 };
-	Position p4{ 7, 8 };
-	Position p5{ 5, 5 };
-
+int main(int, char*[]) {
+    const int cellSize = 16;
+    World world(60, 40);
+    Position p1{ 1, 1 };
+	Position p2{ 2, 19 };
+	Position p3{ 10, 30 };
+	Position p4{ 55, 39 };
+	Position p5{ 30, 20 };
 	world.addOrganism<Grass>(p1, world.getTurn());
 	world.addOrganism<Sheep>(p2, world.getTurn());
 	world.addOrganism<Dandelion>(p3, world.getTurn());
 	world.addOrganism<Wolf>(p4, world.getTurn());
 	world.addOrganism<Toadstool>(p5, world.getTurn());
 
-	cout << world.toString() << endl;
-	world.printOrganisms();
-
-	for (int i = 0; i < 10; i++) {
-		world.makeTurn();
-		cout << world.toString() << endl;
-		world.printOrganisms();
-	}
-
-	std::cout << "Saving" << std::endl;
-	world.saveTo("saves/world.bin");
-
-	for (int i = 0; i < 10; i++) {
-		world.makeTurn();
-		cout << world.toString() << endl;
-		world.printOrganisms();
-	}
-
-	std::cout << "Loading" << std::endl;
-	world.loadFrom("saves/world.bin");
-
-	for (int i = 0; i < 10; i++) {
-		world.makeTurn();
-		cout << world.toString() << endl;
-		world.printOrganisms();
-	}
-
-	return 0;
+    if (!initSDL(world.getWorldX() * cellSize,
+                 world.getWorldY() * cellSize))
+        return 1;
+    renderWorld(world, cellSize);
+    bool running = true;
+    SDL_Event e;
+    while (running) {
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                running = false;
+            }
+            else if (e.type == SDL_KEYDOWN &&
+                     e.key.keysym.sym == SDLK_RETURN) {
+                world.makeTurn();
+                renderWorld(world, cellSize);
+            }
+        }
+        SDL_Delay(10);
+    }
+    shutdownSDL();
+    return 0;
 }

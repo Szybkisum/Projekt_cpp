@@ -11,8 +11,6 @@ private:
 	std::vector<std::shared_ptr<Organism>> organisms;
 	char separator = '.';
 
-	std::shared_ptr<Organism> getOrganismFromPosition(int x, int y) const;
-	std::string getSpeciesFromPosition(int x, int y) const;
 	bool isPositionOnWorld(int x, int y) const;
 	bool isPositionFree(Position position) const;
 
@@ -26,6 +24,8 @@ public:
 	void setWorldY(int worldY);
 	int getTurn() const;
 	
+	std::shared_ptr<Organism> getOrganismFromPosition(int x, int y) const;
+	std::string getSpeciesFromPosition(int x, int y) const;
 
 	void removeOrganism(std::shared_ptr<Organism> org);
 	void addOrganismPtr(std::shared_ptr<Organism> org);

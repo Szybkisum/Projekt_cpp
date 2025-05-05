@@ -4,6 +4,7 @@
 #include "Dandelion.h"
 #include "Wolf.h"
 #include "Toadstool.h"
+#include "rendering.h"
 #include <random>
 #include <fstream>
 #include <ctime>
